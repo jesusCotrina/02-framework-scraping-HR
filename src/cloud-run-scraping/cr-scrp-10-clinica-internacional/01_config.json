@@ -1,0 +1,23 @@
+{   
+    "cloud_run_config": {
+        "name_cloud_run": "cr-scrp-10-clinica-internacional",
+        "code": 10,
+        "bucket_output": "gs://data-lake-raw-01/clínica_internacional/",
+        "num_cruns":2
+    },
+    "cloud_function_config": {
+        "name_cloud_function": "cf-scrp-10-clinica-internacional",
+        "timeout": 540,
+        "memory": "512MB",
+        "entry_point": "main",
+        "runtime": "python310",
+        "trigger_http": true
+    },
+    "cloud_scheduler_config": {
+        "name_cloud_scheduler": "cs-scrp-10-clinica-internacional",
+        "schedule": "0 9 * * 1-5",
+        "time_zone": "America/Lima"
+    }
+
+
+}
