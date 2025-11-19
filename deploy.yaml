@@ -53,7 +53,7 @@ steps:
           changed_src=$(echo "$files_in_folder" | grep "/src/" || true)
           changed_config=$(echo "$files_in_folder" | grep "/config/" || true)
 
-          if [[ -n "$changed_src" ]]; then
+          if [ -n "$changed_src" ]; then
               type="image"
           else
               type="terraform"
