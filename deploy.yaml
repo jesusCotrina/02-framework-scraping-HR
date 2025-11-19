@@ -23,7 +23,6 @@ steps:
         echo "Contenido de /workspace/repo:"
         git show --name-only --pretty="" $COMMIT_SHA
         
-
 options:
   logging: CLOUD_LOGGING_ONLY
 
