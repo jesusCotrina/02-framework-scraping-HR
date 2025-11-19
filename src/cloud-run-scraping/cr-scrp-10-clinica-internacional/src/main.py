@@ -24,7 +24,6 @@ def main_scraper():
         bucket_input    = environ['_BQ_STORAGE_BUCKET_INPUT']
         bucket_output   = environ['_BQ_STORAGE_BUCKET_OUTPUT']
 
-
         # Obtenemos variables
         agrupacion          = param_source.get('agrupacion', '') 
         prefix_key          = project_id.split('-')[3] if '-' in project_id else 'UNK'

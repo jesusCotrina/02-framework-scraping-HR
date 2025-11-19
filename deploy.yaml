@@ -1,0 +1,35 @@
+steps:
+  - id: "Inicio"
+    name: alpine
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        # Autenticarse con GCP
+        echo "Iniciado despliegue"
+        echo "rama $BRANCH_NAME"
+        echo "Repositorio: $REPO_NAME"
+        echo "Commit: $COMMIT_SHA"
+  
+  - id: "Clonar código del Cloud Build A"
+    name: gcr.io/cloud-builders/git
+    entrypoint: "sh"
+    args:
+      - -c
+      - |
+        echo "Iniciando git clone"
+        git clone --depth=1000 https://github.com/jesusCotrina/02-framework-scraping-HR.git repo
+        cd repo
+        echo "Contenido de /workspace/repo:"
+        git show --name-only --pretty="" $COMMIT_SHA
+        
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _REGION: "us-east4"
+  _CODE_IMAGE: "10"
+  _DPLOY_TYPE: "terraform"
+  _PATH_GCR: "cr-scrp-10-clinica-internacional"
+  _PROJECT_ID: "data-engineer-410822"
