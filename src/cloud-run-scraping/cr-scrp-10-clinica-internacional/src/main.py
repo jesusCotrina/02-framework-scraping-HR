@@ -38,6 +38,7 @@ def main_scraper():
         redis_client = redis_connection(server_ip, server_port)
         storage_client = storage.Client()
 
+
         # Ejecutar scraping
         reaseguradoras=read_reaseguradoras(bucket_input,input_file_path,storage_client)
         scraping_fitch_rating(reaseguradoras,redis_client,url,agrupacion)
