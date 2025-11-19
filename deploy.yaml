@@ -49,7 +49,7 @@ steps:
 
           # Filtrar archivos solo de esta carpeta
           files_in_folder=$(echo "$chaged_files" | grep "src/cloud-run-scraping/${folder}")
-
+          echo "files in folder: ${files_in_folder}"
           changed_src=$(echo "$files_in_folder" | grep "/src/" || true)
           changed_config=$(echo "$files_in_folder" | grep "/config/" || true)
 
