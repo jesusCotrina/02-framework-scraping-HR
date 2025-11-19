@@ -71,6 +71,7 @@ steps:
           echo "type_$code=\"$type\"" 
           echo "activando cloud run"        
           gcloud builds triggers run "deploy-frmk-scraping-infra-trrfm-dev" \
+          --region=us-east4 \
           --substitutions=_CODE_IMAGE="$code",_PATH_GCR="$folder",_DPLOY_TYPE="$type"
 
           echo "-----------------------------------------------"
