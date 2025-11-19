@@ -83,6 +83,5 @@ options:
 substitutions:
   _REGION: "us-east4"
   _CODE_IMAGE: "10"
-  _DPLOY_type: "terraform"
   _PATH_GCR: "cr-scrp-10-clinica-internacional"
   _PROJECT_ID: "data-engineer-410822"
