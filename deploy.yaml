@@ -1,5 +1,5 @@
 steps:
-  - id: "Inicio"
+  - id: "Inicio Cloud Build A"
     name: alpine
     entrypoint: "sh"
     args:
@@ -11,7 +11,7 @@ steps:
         echo "Repositorio: $REPO_NAME"
         echo "Commit: $COMMIT_SHA"
   
-  - id: "Clonar código del Cloud Build A"
+  - id: "Activar Cloud Build B"
     name: gcr.io/cloud-builders/git
     entrypoint: "sh"
     args:
@@ -66,11 +66,12 @@ steps:
           code=$(echo "$folder" | sed -E 's/cr-scrp-([0-9]+).*/\1/')
           echo "Código extraído: $code"
 
-          echo "Exportando variables..."
-
           echo "FOLDER_$code=\"$folder\""    
           echo "CODE_$code=\"$code\""        
-          echo "type_$code=\"$type\""         
+          echo "type_$code=\"$type\"" 
+          echo "activando cloud run"        
+          gcloud builds triggers run "deploy-frmk-scraping-infra-trrfm-dev" \
+          --substitutions=_CODE_IMAGE="$code",_PATH_GCR="$folder",_DPLOY_TYPE="$type"
 
           echo "-----------------------------------------------"
 
@@ -82,6 +83,4 @@ options:
 
 substitutions:
   _REGION: "us-east4"
-  _CODE_IMAGE: "10"
-  _PATH_GCR: "cr-scrp-10-clinica-internacional"
   _PROJECT_ID: "data-engineer-410822"
