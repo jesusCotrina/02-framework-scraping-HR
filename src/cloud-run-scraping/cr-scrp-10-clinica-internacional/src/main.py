@@ -33,6 +33,7 @@ def main_scraper():
         output_file_path    = outcome_source.get("output_file_path","")
 
 
+
         # Iniciamos clientes
         server_ip, server_port = env_redis.split('@')
         redis_client = redis_connection(server_ip, server_port)
