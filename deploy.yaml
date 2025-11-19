@@ -20,7 +20,62 @@ steps:
         echo "Iniciando git clone"
         git clone --depth=1000 https://github.com/jesusCotrina/02-framework-scraping-HR.git repo
         cd repo
-        git show --name-only --pretty="" $COMMIT_SHA
+        echo "Obteniendo archivos modificados..."
+        chaged_files=$(git show --name-only --pretty="" $COMMIT_SHA)
+
+        echo "Archivos detectados:"
+        echo "$chaged_files"
+
+        echo "=== 1) Detectando carpetas únicas dentro de src/cloud-run-scraping ==="
+
+        modified_folders=$(echo "$chaged_files" | grep "^src/cloud-run-scraping/" \
+          | cut -d'/' -f3 \
+          | sort -u)
+
+        echo "Carpetas modificadas:"
+        echo "$modified_folders"
+
+        if [ -z "$modified_folders" ]; then
+          echo "No hay carpetas modificadas."
+          exit 0
+        fi
+
+        echo "" > /workspace/folders_detected.env
+
+        for folder in $modified_folders; do
+          echo "Procesando carpeta: $folder"
+
+          echo "=== 2) Detectando tipo de cambio (src | config | ambos) ==="
+
+          # Filtrar archivos solo de esta carpeta
+          files_in_folder=$(echo "$chaged_files" | grep "src/cloud-run-scraping/${folder}")
+
+          changed_src=$(echo "$files_in_folder" | grep "/src/" || true)
+          changed_config=$(echo "$files_in_folder" | grep "/config/" || true)
+
+          if [[ -n "$changed_src" ]]; then
+              type="image"
+          else
+              type="terraform"
+          fi
+
+          echo "Tipo detectado para $folder: $type"
+
+          echo "=== 3) Extrayendo código ==="
+          # Ejemplo folder = cr-scrp-10-clinica-internacional → code=10
+          CODE=$(echo "$folder" | sed -E 's/cr-scrp-([0-9]+).*/\1/')
+          echo "Código extraído: $CODE"
+
+          echo "Exportando variables..."
+
+          echo "FOLDER_$CODE=\"$folder\""    
+          echo "CODE_$CODE=\"$CODE\""        
+          echo "type_$CODE=\"$type\""         
+
+          echo "-----------------------------------------------"
+
+        done
+
         
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -28,6 +83,6 @@ options:
 substitutions:
   _REGION: "us-east4"
   _CODE_IMAGE: "10"
-  _DPLOY_TYPE: "terraform"
+  _DPLOY_type: "terraform"
   _PATH_GCR: "cr-scrp-10-clinica-internacional"
   _PROJECT_ID: "data-engineer-410822"
