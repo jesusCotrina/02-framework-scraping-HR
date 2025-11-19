@@ -63,14 +63,14 @@ steps:
 
           echo "=== 3) Extrayendo código ==="
           # Ejemplo folder = cr-scrp-10-clinica-internacional → code=10
-          CODE=$(echo "$folder" | sed -E 's/cr-scrp-([0-9]+).*/\1/')
-          echo "Código extraído: $CODE"
+          code=$(echo "$folder" | sed -E 's/cr-scrp-([0-9]+).*/\1/')
+          echo "Código extraído: $code"
 
           echo "Exportando variables..."
 
-          echo "FOLDER_$CODE=\"$folder\""    
-          echo "CODE_$CODE=\"$CODE\""        
-          echo "type_$CODE=\"$type\""         
+          echo "FOLDER_$code=\"$folder\""    
+          echo "CODE_$code=\"$code\""        
+          echo "type_$code=\"$type\""         
 
           echo "-----------------------------------------------"
 
