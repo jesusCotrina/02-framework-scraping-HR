@@ -20,7 +20,6 @@ steps:
         echo "Iniciando git clone"
         git clone --depth=1000 https://github.com/jesusCotrina/02-framework-scraping-HR.git repo
         cd repo
-        echo "Contenido de /workspace/repo:"
         git show --name-only --pretty="" $COMMIT_SHA
         
 options:

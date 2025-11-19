@@ -12,6 +12,5 @@
         "name_cloud_scheduler": "inicio-clinica-internacional",
         "schedule": "0 9 * * 1-5",
         "time_zone": "America/Lima"
-    }
-    
+    }   
 }
