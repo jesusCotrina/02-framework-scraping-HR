@@ -19,7 +19,8 @@ steps:
         - -c
         - |
           pip install google-cloud-storage
-          python src/tools/build_config.py
+          cd src/tools/
+          python build_config.py
 
   - id: "Activar Cloud Build B"
     name: gcr.io/cloud-builders/git
