@@ -1,17 +1,17 @@
 {   
     "cloud_run_config": {
-        "name_cloud_run": "cr-scrp-10-clinica-internacional",
-        "code": 10,
-        "ram": "8Gib",
-        "cpu": "2",
-        "env_vars": {
+        "name_scrap": "san-felipe",
+        "code": 11,
+        "ram": "2Gib",
+        "parameters": {
             "bucket_output":"gs://data-lake-raw-01/clínica_internacional/"
         }
     },
     "cloud_scheduler_config": {
-        "name_cloud_scheduler": "inicio-clinica-internacional",
+        "name_cloud_scheduler": "inicio-san-felipe",
+        "description": "Scheduler para iniciar el Cloud Run de clinica internacional",
         "schedule": "0 9 * * 1-5",
         "time_zone": "America/Lima"
     }
-    
+
 }
