@@ -8,7 +8,6 @@
             "dataset":"scraping_data",
             "table_name":"clinica_internacional",
             "path_blob":"data_scraping/{dataset}/{table_name}"
-            
         }
     },
     "cloud_scheduler_config": {

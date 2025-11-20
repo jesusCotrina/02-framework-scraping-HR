@@ -57,7 +57,7 @@ def main():
             "name_scrap": name_scrap,
             "code": code,
             "ram": cloud_run["ram"],
-            "parameters": cloud_run.get("env_vars", {})
+            "parameters": cloud_run.get("parameters", {})
         }
 
         cloud_scheduler_final[code] = {
