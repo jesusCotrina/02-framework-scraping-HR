@@ -1,112 +1,102 @@
 import json,time,requests,datetime,traceback
 from os import environ
-
 from flask import Flask, jsonify
-import google.auth.transport.requests
-import google.oauth2.id_token
 from google.cloud import storage 
-
-from utils.gcp_redis import redis_connection
-from utils.scraper_fitchrating import read_reaseguradoras,scraping_fitch_rating,save_data
-
+import pyarrow as pa
+import pyarrow.parquet as pq
+from datetime import date
+from utils.functions import *
 app = Flask(__name__)
 
 @app.route('/')
 def main_scraper():
     try:
         # Lectura de variables de entorno
-        param_source    = json.loads(environ['_SOURCE'])
-        outcome_source  = json.loads(environ['_OUTCOME'])
-        env_redis       = environ['_REDIS']
-        service_name    = environ['_INSTANCE_NAME']
-        project_id      = environ['PROJECT_ID']
-        url_control     = environ['url_control']
-        bucket_input    = environ['_BQ_STORAGE_BUCKET_INPUT']
-        bucket_output   = environ['_BQ_STORAGE_BUCKET_OUTPUT']
+        project_id          = environ['PROJECT_ID']
+        bucket_output       = environ['BUCKET_OUTPUT']
 
-        # Obtenemos variables
-        agrupacion          = param_source.get('agrupacion', '') 
-        prefix_key          = project_id.split('-')[3] if '-' in project_id else 'UNK'
-        key_control         = f"{agrupacion}-{prefix_key}"
-        input_file_path     = param_source.get("input_file_path","")
-        url                 = param_source.get("source_url","")   
-        output_file_path    = outcome_source.get("output_file_path","")
+        url                 = environ['url']
+        path_blob           = environ['path_blob']
+        dataset             = environ['dataset']
+        table_name          = environ['table_name']
+        
+
+        path_blob=path_blob.replace("{dataset}",dataset).replace("{table_name}",table_name)
 
         # Iniciamos clientes
-        server_ip, server_port = env_redis.split('@')
-        redis_client = redis_connection(server_ip, server_port)
         storage_client = storage.Client()
+        bq_client = bigquery.Client()
 
         # Ejecutar scraping
-        reaseguradoras=read_reaseguradoras(bucket_input,input_file_path,storage_client)
-        scraping_fitch_rating(reaseguradoras,redis_client,url,agrupacion)
-        save_data(redis_client,agrupacion,storage_client,bucket_output,output_file_path)
+        url_clinica_internacional=url
+        params = {
+            "filters[isActive][$eq]": "true",
+            "pagination[pageSize]": 10000,
+            "populate[schedule]": "true",
+            "populate[schedule][populate][sedes]": "true",
+            "populate[schedule][populate][sedes][populate][sede]": "true",
+            "populate[schedule][populate][sedes][populate][tipo_de_atencion]": "true",
+            "populate[schedule][populate][sedes][populate][days]": "true",
+            "populate[schedule][populate][especialidad]": "true"
+        }
+
+        response= requests.get(url=url_clinica_internacional,params=params,verify=False)
+        data=response.json()
+        print("Status:", response.status_code)
+        data_estructurada=[]
+
+        for i,doctor in enumerate(data["data"]):
+            new_row={"clinica":"Clinica Internacional"}
+            new_row["nombre_completo"]=doctor["fullname"]
+            new_row["cmp"]=doctor["cmp"]
+            new_row["codigo_medico"]=doctor["medicalCode"]
+            new_row["activo"]=doctor["isActive"]
+            new_row["experiencia"]=doctor["expertise"]
+            new_row["url_imagen"]=doctor["url_image"]
+
+            for schedule in doctor["schedule"]:
+                try:
+                    new_row["especialidad_slug"]=schedule["especialidad"]["slug"]
+                    new_row["especialidad"]=schedule["especialidad"]["title"]
+                    new_row["description_card"]=schedule["especialidad"].get("description_card","")
+
+                    for sedes in schedule["sedes"]:
+                        new_row["sede_slug"]=sedes["sede"]["slug"]
+                        new_row["sede_title"]=sedes["sede"]["title"]
+                        new_row["sede_adress"]=sedes["sede"]["address"]
+                        new_row["tipo_atencion_slug"]=sedes["tipo_de_atencion"]["slug"]
+                        new_row["tipo_atencion_title"]=sedes["tipo_de_atencion"]["Title"]
+                        
+
+                        for day in sedes["days"]:
+                            new_row["dia"]=day["day"]
+                            new_row["hora_inicio"]=day["start_time"]
+                            new_row["hora_fin"]=day["end_time"]
+                            new_row["fecha_scraping"]=date.today()
+                            print("agregando data",new_row)
+                            data_estructurada.append(new_row.copy())
+                    
+                
+                except Exception as e:
+                    print("error",new_row["nombre_completo"],e)
+                    continue
+        
+        subir_archivo_bucket(data_estructurada,storage_client,bucket_output,path_blob)
+        crear_tabla_externa(bq_client,project_id,dataset,table_name,bucket_output,path_blob)
 
 
-        # Actualizar estado en Redis y notificar control externo
-        reporte_control(redis_client,key_control,service_name,url_control,agrupacion)
 
     except Exception as e:
         print("Error en main_scraper:", e)
         tb= traceback.format_exc()
         print(tb)
-        print("Notificando error al control externo, se procede a terminar el proceso")
-        
-        payload = {
-                    "agrupacion": agrupacion,
-                    "tipo": "E",
-                    "estado": "Cloud Run",
-                    "status_code": 400,
-                    "message": f"Error en el cloud run {service_name}\nerror: {e}\n{tb}"
-                }
-        make_authorized_get_request(url_control, payload)
-        
+        print("Notificando error")
 
     return 'Proceso finalizado.'
 
 
-def reporte_control(redis_client,key_control,service_name,url_control,agrupacion):
-    try:
-        raw = redis_client.get(key_control)
-        control = json.loads(raw or '{}')
-        estado = control.get('estado_proceso')
-    
-
-        payload = {"agrupacion": agrupacion, "tipo": "finish", "estado": "finish_crun"}
-
-        if estado == 'ACTIVO':
-            control.setdefault('cruns', {})[service_name] = 1
-            control['last_update'] = time.time()
-            redis_client.set(key_control, json.dumps(control))
-            
-            make_authorized_get_request(url_control,payload)
-        
-    except Exception as e:
-        print(f"Error en reporte_control: {e}")
-        raise
 
 
-
-def make_authorized_get_request(endpoint,payload):
-    """
-    Realiza una petición POST autorizada con ID token de Google.
-    """
-    try:
-        auth_req = google.auth.transport.requests.Request()
-        token = google.oauth2.id_token.fetch_id_token(auth_req, endpoint)
-
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
-    
-        response = requests.post(endpoint, headers=headers, json=payload, timeout=10)
-        response.raise_for_status()
-        return response.text
-    
-    except Exception as e:
-        print(f"Error en make_authorized_get_request: {e}")
-        raise
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(environ.get("PORT", 8080)))

@@ -4,7 +4,10 @@
         "code": "10",
         "ram": "2Gi",
         "parameters": {
-            "bucket_output":"gs://data-lake-raw-01/clínica_internacional/"
+            "url":"https://clinicainternacional.com.pe/api/doctors",
+            "dataset":"scraping_data",
+            "table_name":"clinica_internacional",
+            "path_blob":"data_scraping/{dataset}/{table_name}"
         }
     },
     "cloud_scheduler_config": {
@@ -12,6 +15,6 @@
         "description": "Scheduler para iniciar el Cloud Run de clinica internacional",
         "schedule": "0 9 * * 1-5",
         "time_zone": "America/Lima"
-    }   
+    }
 
 }
