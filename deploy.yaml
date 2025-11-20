@@ -13,7 +13,7 @@ steps:
         ls -la
   
   - id: "Consolidar config y subir al bucket"
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+    name: python:3.11-slim
     entrypoint: bash
     args: 
         - -c
