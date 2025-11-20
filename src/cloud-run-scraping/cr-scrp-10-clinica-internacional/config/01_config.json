@@ -2,7 +2,7 @@
     "cloud_run_config": {
         "name_scrap": "clinica-internacional",
         "code": "10",
-        "ram": "2Gib",
+        "ram": "2Gi",
         "parameters": {
             "bucket_output":"gs://data-lake-raw-01/clínica_internacional/"
         }
