@@ -13,13 +13,13 @@ steps:
         ls -la
   
   - id: "Consolidar config y subir al bucket"
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
     entrypoint: bash
     args: 
         - -c
         - |
-          pip3 install google-cloud-storage --quiet
-          python3 src/tools/build_config.py
+          pip install google-cloud-storage
+          python src/tools/build_config.py
 
   - id: "Activar Cloud Build B"
     name: gcr.io/cloud-builders/git
