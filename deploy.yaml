@@ -10,11 +10,12 @@ steps:
         echo "rama $BRANCH_NAME"
         echo "Repositorio: $REPO_NAME"
         echo "Commit: $COMMIT_SHA"
+        ls -la
   
   - id: "Consolidar config y subir al bucket"
     name: python
     entrypoint: python3
-    args: ["tools/build_config.py"]
+    args: ["src/tools/build_config.py"]
 
   - id: "Activar Cloud Build B"
     name: gcr.io/cloud-builders/git
