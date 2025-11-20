@@ -1,0 +1,32 @@
+{
+    "cloud_run_config": {
+        "10": {
+            "name_scrap": "clinica-internacional",
+            "code": "10",
+            "ram": "2Gib",
+            "parameters": {}
+        },
+        "11": {
+            "name_scrap": "san-felipe",
+            "code": "11",
+            "ram": "2Gib",
+            "parameters": {}
+        }
+    },
+    "cloud_scheduler_config": {
+        "10": {
+            "name": "inicio-clinica-internacional",
+            "description": "Scheduler para iniciar el Cloud Run de clinica-internacional",
+            "schedule": "0 9 * * 1-5",
+            "time_zone": "America/Lima",
+            "enabled": true
+        },
+        "11": {
+            "name": "inicio-san-felipe",
+            "description": "Scheduler para iniciar el Cloud Run de san-felipe",
+            "schedule": "0 9 * * 1-5",
+            "time_zone": "America/Lima",
+            "enabled": true
+        }
+    }
+}
