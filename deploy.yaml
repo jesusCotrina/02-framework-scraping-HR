@@ -11,6 +11,11 @@ steps:
         echo "Repositorio: $REPO_NAME"
         echo "Commit: $COMMIT_SHA"
   
+  - id: "Consolidar config y subir al bucket"
+    name: python
+    entrypoint: python3
+    args: ["tools/build_config.py"]
+
   - id: "Activar Cloud Build B"
     name: gcr.io/cloud-builders/git
     entrypoint: "sh"
