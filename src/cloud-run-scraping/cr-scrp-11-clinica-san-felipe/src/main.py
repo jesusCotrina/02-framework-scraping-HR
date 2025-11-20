@@ -11,7 +11,7 @@ from utils.scraper_fitchrating import read_reaseguradoras,scraping_fitch_rating,
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['POST'])
 def main_scraper():
     try:
         # Lectura de variables de entorno

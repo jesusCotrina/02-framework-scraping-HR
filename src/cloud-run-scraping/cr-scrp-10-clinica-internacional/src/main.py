@@ -27,7 +27,9 @@ def main_scraper():
         storage_client = storage.Client()
         bq_client = bigquery.Client()
 
-        # Ejecutar scraping
+        # ========================== Ejecutar scraping =======================================
+        # ====================================================================================
+
         url_clinica_internacional=url
         params = {
             "filters[isActive][$eq]": "true",
@@ -81,10 +83,14 @@ def main_scraper():
                     print("error",new_row["nombre_completo"],e)
                     continue
         
+        # ========================== termino scraping =======================================
+        # ====================================================================================
+        
+
         subir_archivo_bucket(data_estructurada,storage_client,bucket_output,path_blob)
         crear_tabla_externa(bq_client,project_id,dataset,table_name,bucket_output,path_blob)
 
-
+        
 
     except Exception as e:
         print("Error en main_scraper:", e)
