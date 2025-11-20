@@ -8,7 +8,7 @@ from datetime import date
 from utils.functions import *
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['POST','GET'])
 def main_scraper():
     try:
         # Lectura de variables de entorno
