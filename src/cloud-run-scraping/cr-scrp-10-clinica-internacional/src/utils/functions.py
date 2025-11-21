@@ -36,7 +36,7 @@ def crear_tabla_externa(bq_client,project_id,dataset,table_name,bucket,path_blob
     
     except Exception as e:
         print("Creando tabla externa")
-        f = open(f'../config/02_schema-bigquery.json')
+        f = open(f'./config/02_schema-bigquery.json')
         config_schema = json.load(f)
         schema_dict = config_schema["schema"]
         formato_archivo= config_schema.get("format","PARQUET")
