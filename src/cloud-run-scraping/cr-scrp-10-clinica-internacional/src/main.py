@@ -47,6 +47,7 @@ def main_scraper():
         print("Status:", response.status_code)
         data_estructurada=[]
 
+
         for i,doctor in enumerate(data["data"]):
             new_row={"clinica":"Clinica Internacional"}
             new_row["nombre_completo"]=doctor["fullname"]
