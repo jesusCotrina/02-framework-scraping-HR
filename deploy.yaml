@@ -29,7 +29,7 @@ steps:
       - -c
       - |
         echo "Iniciando git clone"
-        git clone --depth=1000 https://github.com/jesusCotrina/02-framework-scraping-HR.git repo
+        git clone --depth=1000 https://github.com/jesusCotrina/02-motor-scraping-HR.git repo
         cd repo
         echo "Obteniendo archivos modificados..."
         chaged_files=$(git show --name-only --pretty="" $COMMIT_SHA)
