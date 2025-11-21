@@ -6,6 +6,7 @@ from google.cloud import bigquery
 from datetime import datetime
 
 def subir_archivo_bucket(data,client,bucket_name,destination_blob):
+    print("subiendo archivo parquet")
     periodo=datetime.now().replace(day=1).strftime('%Y-%m-%d')
     filename_bucket=datetime.now().strftime('%d-%m-%Y_%H-%M')
     destination_blob_periodo=f"{destination_blob}/periodo={periodo}/{filename_bucket}.parquet"
@@ -24,6 +25,7 @@ def subir_archivo_bucket(data,client,bucket_name,destination_blob):
     blob = bucket.blob(destination_blob_periodo)
 
     blob.upload_from_file(buffer, content_type='application/octet-stream')
+    print("se subio el archivo parquet en la ruta:",destination_blob_periodo)
 
 def crear_tabla_externa(bq_client,project_id,dataset,table_name,bucket,path_blob):
 

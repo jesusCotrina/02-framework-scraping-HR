@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar el resto del código
 COPY src/ .
+COPY config/ .
 
 # Instalar dependencias del sistema necesarias para OCR y scraping
 RUN apt-get update \
