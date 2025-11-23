@@ -20,7 +20,6 @@ def main_scraper():
         dataset             = environ['dataset']
         table_name          = environ['table_name']
         
-
         path_blob=path_blob.replace("{dataset}",dataset).replace("{table_name}",table_name)
 
         # Iniciamos clientes
@@ -186,7 +185,7 @@ def main_scraper():
                                 if atributo["attribute"]["slug"] == "presentation":
                                     new_row["presentacion"]=atributo["values"][0]["name"]
                                     data_estructurada.append(new_row.copy())
-                                    
+
                                     with open(json_file, "r", encoding="utf-8") as f:
                                         data = json.load(f)
                                     
