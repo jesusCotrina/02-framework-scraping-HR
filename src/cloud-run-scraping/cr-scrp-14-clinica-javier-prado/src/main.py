@@ -39,7 +39,6 @@ def main_scraper():
         storage_client = storage.Client()
 
         # Ejecutar scraping
-        
         url="https://citas.cjp.pe:8081/erp/cita/especialidad/all/especialidad?modalidad=1"
         output_file="data_javier_prado2.jsonl"
         response=requests.get(url=url)
