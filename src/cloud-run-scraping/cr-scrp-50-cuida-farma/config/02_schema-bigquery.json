@@ -1,0 +1,90 @@
+{
+    "format": "PARQUET",
+    "schema": 
+    [
+        {
+            "name": "categoria",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "categoria_slug",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "sub_ctegoria",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "sub_ctegoria_slug",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "name_product",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "esta_disponible",
+            "mode": "NULLABLE",
+            "type": "BOOLEAN",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "url_image",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "precio",
+            "mode": "NULLABLE",
+            "type": "FLOAT",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "moneda",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "url_compra",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "presentacion",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "fecha_scrapeo",
+            "mode": "NULLABLE",
+            "type": "DATE",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

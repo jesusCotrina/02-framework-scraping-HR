@@ -1,0 +1,9 @@
+Flask
+gunicorn
+requests
+google-auth
+redis
+pandas
+openpyxl
+pyarrow
+google-cloud-storage

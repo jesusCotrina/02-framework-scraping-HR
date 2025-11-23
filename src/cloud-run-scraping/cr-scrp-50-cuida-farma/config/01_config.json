@@ -1,19 +1,19 @@
 {   
     "cloud_run_config": {
-        "name_scrap": "clinica-internacional",
-        "code": "10",
+        "name_scrap": "cuida-farma",
+        "code": "50",
         "ram": "2Gi",
         "parameters": {
             "url":"https://clinicainternacional.com.pe/api/doctors",
             "dataset":"scraping_data",
-            "table_name":"clinica_internacional",
+            "table_name":"cuida-farma",
             "path_blob":"data_scraping/{dataset}/{table_name}"
-
+            
         }
     },
     "cloud_scheduler_config": {
-        "name_cloud_scheduler": "inicio-clinica-internacional",
-        "description": "Scheduler para iniciar el Cloud Run de clinica internacional",
+        "name_cloud_scheduler": "inicio-cuida-farma",
+        "description": "Scheduler para iniciar el Cloud Run de cuida farma",
         "schedule": "0 23 * * 0",
         "time_zone": "America/Lima"
     }

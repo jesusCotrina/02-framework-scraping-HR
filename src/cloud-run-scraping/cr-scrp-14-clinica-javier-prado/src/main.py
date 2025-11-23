@@ -39,91 +39,62 @@ def main_scraper():
         storage_client = storage.Client()
 
         # Ejecutar scraping
-        output_file="medicos.jsonl"
-
-        url="https://www.clinicasanfelipe.com/medicos/"
+        
+        url="https://citas.cjp.pe:8081/erp/cita/especialidad/all/especialidad?modalidad=1"
+        output_file="data_javier_prado2.jsonl"
         response=requests.get(url=url)
-        print("response.text",response.status_code)
-        html = response.text
-        soup = BeautifulSoup(html, "html.parser")
 
-        medicos = []
-
-        for item in soup.select("div.especialidad-text"):
-
-            # Nombre del médico
-            nombre = item.select_one(".nombre")
-
-            # Especialidad
-            especialidad = item.select_one(".area")
-
-            # Sedes
-            sedes = item.select_one(".badge")
-
-            # Link info (Conócelo aquí)
-            enlace_info = item.select_one(".ctas a.btn-primary-outline")
-
-            # Imagen y alt
-            img = item.select_one(".avatar img")
-            img_src = img["src"] if img else None
-            img_alt = img["alt"] if img else None
-
-            # Link "Haz una cita"
-            enlace_cita = item.select_one(".ctas a.btn-primary.btn-primary")
-            # si no detecta por doble clase, usar:
-            if not enlace_cita:
-                enlace_cita = item.select_one(".ctas a.btn-primary")
-
-            medico = {
-                "nombre_medico": nombre.get_text(strip=True) if nombre else None,
-                "especialidad": especialidad.get_text(strip=True) if especialidad else None,
-                "sedes": sedes.get_text(strip=True) if sedes else None,
-                
-                "url_foto": img_src,
-                "nombre_alt": img_alt,
-                "url_haz_cita": enlace_cita["href"] if enlace_cita else None
+        data_json=response.json()
+        for especialidad in data_json["data"]:
+            medico_nuevo={}
+            
+            id_especialidad=especialidad["idEspecialidad"]
+            nombre=especialidad["nombre"]
+            url2="https://citas.cjp.pe:8081/erp/cita/especialidad/all/medicosxhorarios"
+            headers = {
+                "content-type":"application/json",
+                "origin": "https://citas.cjp.pe"
             }
-            url_medico= enlace_info["href"] if enlace_info else None
-            url2=f"https://www.clinicasanfelipe.com/medicos/{url_medico}"
+            hoy = datetime.now()
+            payload={"idespecialidad":id_especialidad,
+                "anio":hoy.year,
+                "mes":hoy.month,"dia":hoy.day,
+                "sucursal":"0001",
+                "indicadorvirtual":"1"}
+            
+            print("second post",payload)
+            try:
+                response=requests.post(url=url2,json=payload,headers=headers)
+                medicos=response.json()
+            
 
-            response=requests.get(url=url2)
-            print("response.text",url2)
-            soup = BeautifulSoup(response.text, "html.parser")
-            collapse_one = soup.select_one("#collapseOne .accordion-body")
+                for medico in medicos:
+                    medico_nuevo["nombre_completo"]=medico["medico"]
+                    medico_nuevo["cmp"]=medico["cmp"]
+                    medico_nuevo["rne"]=medico["rne"]
+                    medico_nuevo["url_foto"]=medico["foto"]
+                    medico_nuevo["especialidad"]=medico["especialidad"]
 
-            cmp = None
-            rne = None
+                    print()
+                    dias_doctor=[]
+                    for dia in medico["dias"][0]:
 
-            if collapse_one:
-                p_tags = collapse_one.find_all("p")
-                for p in p_tags:
-                    text = p.get_text(strip=True)
-                    if text.startswith("CMP:"):
-                        cmp = text.replace("CMP:", "").strip()
-                    if text.startswith("RNE:"):
-                        rne = text.replace("RNE:", "").strip()
+                        if dia["dia"] not in dias_doctor:
+                            medico_nuevo["dia_atencion"]=dia["dia"]
+                            dias_doctor.append(dia["dia"])
+                            horarios=dia["horarios"]
 
-            # -------- OBTENER FORMACION Y TRAYECTORIA ----------
-            collapse_two = soup.select_one("#collapseTwo .accordion-body")
+                            for horario in horarios:
+                                medico_nuevo["hora_inicio"]=horario["horaInicio"]
+                                medico_nuevo["hora_fin"]=horario["horaFin"]
+                                print(medico_nuevo.copy())
 
-            formacion = ""
-            if collapse_two:
-                p_tags = collapse_two.find_all("p")
-                valores = []
-                for p in p_tags:
-                    txt = p.get_text(strip=True)
-                    if ":" in txt:
-                        valores.append(txt.split(":",1)[1].strip())
-                formacion = " & ".join(valores)
+                                with open(output_file, "a", encoding="utf-8") as f:
+                                    f.write(json.dumps(medico_nuevo.copy(), ensure_ascii=False) + "\n")
 
-            medico["cmp"]=cmp
-            medico["rne"]=rne
-            medico["formacion"]=formacion
-            medico["fecha_scraping"]=datetime.now().strftime("%Y-%m-%d")
-            print("medico",medico)
-            medicos.append(medico)
-            with open(output_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(medico.copy(), ensure_ascii=False) + "\n")
+            except Exception as e:
+                print("error",e)
+                continue
 
 
         # Actualizar estado en Redis y notificar control externo
